@@ -11,11 +11,11 @@
   - D-H → FK → IK → Jacobian → 동역학 → 궤적이 이 저장소 13~15강 코드와 같은 순서
   - Physical AI에서 뒤에 나오는 모든 것(비전 좌표 변환, Sim2Real의 System ID)이 이 기초 위에 있음
 - 먼저 읽을 곳
-  - 2장 공간 기술과 변환 → `transforms.py`
-  - 3장 순기구학 → `fk_chain.py`
-  - 5장 Jacobian·특이점 → `jacobian.py`
-  - 6장 동역학 → `arm_dynamics.py`
-  - 7장 궤적 생성 → `trajectory.py`
+  - 2장 공간 기술과 변환 → `transforms.ipynb`
+  - 3장 순기구학 → `fk_chain.ipynb`
+  - 5장 Jacobian·특이점 → `jacobian.ipynb`
+  - 6장 동역학 → `arm_dynamics.ipynb`
+  - 7장 궤적 생성 → `trajectory.ipynb`
 
 ## [2순위. Probabilistic Robotics — S. Thrun, W. Burgard, D. Fox]
 - 판·출판: MIT Press, 2005

@@ -28,18 +28,22 @@
 
 ## [파일 이름 규칙]
 - 형식: `순번_원본파일명` 또는 `순번_교안의절제목`
-- 모든 파일 첫머리에 **출처 강의 · 절 · (있으면) 교안이 지정한 원본 경로**(예: `src/fk_chain.py`)를 주석으로 표기
+- Python 코드는 모두 Jupyter 노트북(`.ipynb`)
+  - 첫 마크다운 셀: **출처 강의 · 절 · (있으면) 교안이 지정한 원본 경로**
+  - 원본 경로는 교안 표기 그대로 둠(예: `src/fk_chain.py`)
+  - 다음 코드 셀: 교안의 코드 블록
+- C·Bash·YAML 파일은 첫머리 주석에 같은 출처 정보를 표기
 - 강의 폴더 안의 코드는 교안 원문 그대로이며, 교안이 "핵심부"만 보여 준 발췌가 많음
 
 ## [실행 형태별 구분]
 - **바로 실행·테스트**
-  - 대상: `M2_kinematics_dynamics/runnable/`, `L01/01_*.py`
+  - 대상: `M2_kinematics_dynamics/runnable/`, `L01/01_*.ipynb`
   - 방법: 아래 [바로 실행해 보기] 참고
 - **Python 발췌(라이브러리 필요)**
-  - 대상: M3·M4·M7·M8·M9의 `.py`
+  - 대상: M3·M4·M7·M8·M9의 `.ipynb`
   - 방법: OpenCV / Open3D / PyTorch / ONNX 환경에서 앞뒤 맥락과 함께 조립
 - **ROS 2 노드·명령**
-  - 대상: `*_node.py`, `*.sh`, `waypoints.yaml`
+  - 대상: `*_node.ipynb`, `*.sh`, `waypoints.yaml`
   - 방법: ROS 2 Lyrical + Isaac ROS 5.0 (PC), Isaac Sim
 - **MCU 펌웨어 (C)**
   - 대상: M1의 `.c`
@@ -52,16 +56,21 @@
 
 ## [바로 실행해 보기]
 - 가상환경: `python3 -m venv .venv && source .venv/bin/activate`
-- 의존성: `pip install numpy scipy matplotlib pytest`
-- 이동: `cd M2_kinematics_dynamics/runnable`
-- 테스트: `python -m pytest -q` → 14 passed
-- 13강 데모: `python demos/demo_fk_workspace.py` → FK·작업공간 → `demos/out/fk_workspace.png`
-- 14강 데모: `python demos/demo_singularity.py` → pinv vs DLS 특이점 통과 → `demos/out/singularity.png`
-- 15강 데모: `python demos/demo_tracking.py` → 계단/Quintic × PID/PID+중력보상 → `demos/out/tracking.png`
-- `L01/01_Python으로_눈으로_확인하기.py`는 그림만 그리므로 끝에 `plt.show()`를 붙이거나 노트북에서 실행
+- 의존성: `pip install numpy scipy matplotlib pytest jupyterlab`
+- 실행: `jupyter lab` 후 `M2_kinematics_dynamics/runnable/`의 노트북을 열어 "Run All"
+  - VSCode에서는 노트북을 열고 커널로 `.venv`를 고른 뒤 "모두 실행"
+- 노트북끼리 불러오는 방식
+  - `src/*.ipynb`가 함수·클래스 정의를 담음
+  - `tests/`·`demos/` 노트북은 첫 코드 셀에서 `%run -i ../src/<모듈>.ipynb`로 필요한 정의를 불러옴
+- 테스트: `tests/test_fk.ipynb`, `test_jacobian.ipynb`, `test_dynamics.ipynb` → 마지막 셀이 테스트를 직접 돌려 `N passed` 출력
+- 13강 데모: `demos/demo_fk_workspace.ipynb` → FK·작업공간 → `demos/out/fk_workspace.png`
+- 14강 데모: `demos/demo_singularity.ipynb` → pinv vs DLS 특이점 통과 → `demos/out/singularity.png`
+- 15강 데모: `demos/demo_tracking.ipynb` → 계단/Quintic × PID/PID+중력보상 → `demos/out/tracking.png`
+- `L01/01_Python으로_눈으로_확인하기.ipynb`: 노트북에서 실행하면 1차·2차 계단 응답 그래프가 바로 그려짐
+- 터미널에서 한꺼번에 실행: `jupyter nbconvert --to notebook --execute --inplace M2_kinematics_dynamics/runnable/*/*.ipynb`
 
 ## [실제 실행 결과]
-- `pytest`: 14 passed (FK 기지 자세 6, Jacobian 해석해=수치미분 3, 특이점 1, 동역학 4)
+- 테스트 노트북: 14 passed (FK 기지 자세 6, Jacobian 해석해=수치미분 3, 특이점 1, 동역학 4)
 - 작업 공간: 손끝 도달 반경 0.100 ~ 0.500 m (이론값 \|L1−L2\| ~ L1+L2 와 일치)
 - 특이점 통과: 순정 pinv 최대 관절속도 **236.5 rad/s** (폭주) vs DLS **0.39 rad/s**
 - 궤적 추종 RMS: 계단+PID 0.165 · 계단+PID+g 0.158 · Quintic+PID 0.072 · **Quintic+PID+g 0.0099 rad**
@@ -107,8 +116,8 @@
 - **순기구학(9·13강)**
   - 링크마다 D-H 파라미터 한 행 $(\theta,d,a,\alpha)$가 동차변환 하나
   - $T_{i-1}^{\,i}=R_z(\theta)\,T_z(d)\,T_x(a)\,R_x(\alpha)$, $T_0^{\,n}=\prod_i T_{i-1}^{\,i}$
-  - `transforms.py`의 `dh_transform`이 이 곱, `fk_chain.py`의 `PlanarArm`이 사슬을 누적
-  - 평면 2링크 손끝: $x=L_1c_1+L_2c_{12},\;y=L_1s_1+L_2s_{12}$ → `test_fk.py`가 기지 자세로 고정
+  - `transforms.ipynb`의 `dh_transform`이 이 곱, `fk_chain.ipynb`의 `PlanarArm`이 사슬을 누적
+  - 평면 2링크 손끝: $x=L_1c_1+L_2c_{12},\;y=L_1s_1+L_2s_{12}$ → `test_fk.ipynb`가 기지 자세로 고정
 - **Jacobian과 특이점(11·14강)**
   - 관절 속도 ↔ 손끝 속도: $\dot x=J(\theta)\dot\theta$
   - 평면 팔의 $j$번째 열 = $j$번째 관절 뒤쪽 링크 벡터 합을 90° 회전(`jacobian_planar`)
@@ -139,7 +148,7 @@
   - 투영: $s\,[u,v,1]^\top=K\,[R\,|\,t]\,[X,Y,Z,1]^\top$
   - 내부파라미터: $K=\begin{bmatrix}f_x&0&c_x\\0&f_y&c_y\\0&0&1\end{bmatrix}$
   - 렌즈 왜곡: 방사 $(k_1,k_2,k_3)$ + 접선 $(p_1,p_2)$
-  - Zhang 체커보드 캘리브레이션(`calibrate.py`): 여러 장의 평면 대응점으로 $K$·왜곡계수 추정
+  - Zhang 체커보드 캘리브레이션(`calibrate.ipynb`): 여러 장의 평면 대응점으로 $K$·왜곡계수 추정
   - 품질 판정: **재투영 오차 RMS**
 - **PnP와 단안 거리(18·22강)**
   - PnP: 알려진 3D 점과 2D 투영의 대응에서 $[R|t]$를 구하는 문제(`cv2.solvePnP`)
@@ -161,7 +170,7 @@
   - P3P: 최소 3점으로 해를 최대 4개까지 산출
   - EPnP: n개 점을 가상 제어점 4개의 가중합으로 표현해 $O(n)$에 풂
   - 이상치가 섞이면 **RANSAC**: 최소 표본 가설 → inlier 합의로 선택(`solvePnPRansac`)
-  - `pnp_bench.py`: 정답을 아는 합성 데이터로 노이즈·점 개수·이상치 비율별 오차 측정
+  - `pnp_bench.ipynb`: 정답을 아는 합성 데이터로 노이즈·점 개수·이상치 비율별 오차 측정
 - **YOLO(25·29강)**
   - 단일 단계 검출기: 한 번의 순전파로 박스·클래스·신뢰도 → NMS로 겹친 박스 정리
   - ROS 노드는 표준 메시지 `vision_msgs/Detection2DArray`로 발행
@@ -173,10 +182,10 @@
   - SOR: 이웃 평균거리가 $\mu+k\sigma$를 넘는 점 제거
   - RANSAC 평면 $ax+by+cz+d=0$ 추출(테이블·바닥)
   - DBSCAN 클러스터링(개체 분리)
-  - `synth_scene.py`: 정답 라벨이 있는 장면을 만들어 단계별 계량
+  - `synth_scene.ipynb`: 정답 라벨이 있는 장면을 만들어 단계별 계량
 - **RGBD 역투영(27·31강)**
   - 깊이 $Z$와 픽셀 $(u,v)$에서 $X=\frac{(u-c_x)Z}{f_x},\;Y=\frac{(v-c_y)Z}{f_y}$
-  - `depth_to_cloud.py`: 30만 픽셀을 벡터화해 한 번에 계산
+  - `depth_to_cloud.ipynb`: 30만 픽셀을 벡터화해 한 번에 계산
   - 깊이와 컬러의 정렬(align)이 선행 조건
   - 검출 박스 × 깊이 × 클라우드를 합쳐 물체의 3D 위치 획득
 
@@ -192,14 +201,14 @@
 - **Nav2(40·43~45강)**
   - Behavior Tree가 전역 플래너(경로)와 로컬 컨트롤러(속도 명령)를 조율
   - costmap 레이어(static/obstacle/inflation)가 장애물을 비용장으로 변환
-  - `patrol_node.py`: `nav2_simple_commander`로 `NavigateToPose`/`followWaypoints` 액션 호출
+  - `patrol_node.ipynb`: `nav2_simple_commander`로 `NavigateToPose`/`followWaypoints` 액션 호출
   - 경유지는 `waypoints.yaml`로 분리
-  - 44~45강: 성공률·소요시간·재계획 횟수 반복 측정 벤치마크(`bench_runner.py`) + 회귀 게이트로 튜닝 채택 판정
+  - 44~45강: 성공률·소요시간·재계획 횟수 반복 측정 벤치마크(`bench_runner.ipynb`) + 회귀 게이트로 튜닝 채택 판정
 
 ## [⑦ 로봇 모방학습 및 정책 최적화 (46~54강) — `M7_imitation_learning/`]
 - **Behavior Cloning(47·51강)**
   - 시연 $(o,a)$ 쌍에 대한 지도학습: $\min_\pi\mathbb E\,\|\pi(o)-a\|^2$
-  - `train_bc.py`: 아키텍처(MLP/CNN/Transformer)만 갈아 끼우는 공용 학습기
+  - `train_bc.ipynb`: 아키텍처(MLP/CNN/Transformer)만 갈아 끼우는 공용 학습기
   - 전제는 50강 데이터 정합: 다주기 스트림을 타임스탬프로 보간해 짝짓기, 노이즈 필터, HDF5 저장
 - **공변량 이동과 DAgger(49·54강)**
   - BC는 자기 실수로 처음 보는 상태에 들어가면 오차가 누적(대략 $O(T^2)$)
@@ -222,9 +231,9 @@
 - **도메인 랜덤화(56·60강)**
   - 텍스처, 조명, 질량, 마찰을 분포 $\xi\sim p(\xi)$에서 뽑아 학습
   - 목표: $\max_\pi\mathbb E_{\xi}[R(\pi;\xi)]$ → 현실을 그 분포의 한 표본으로 만듦
-  - **ADR**: 성공률이 임계를 넘으면 랜덤화 폭을 넓히는 커리큘럼(`adr.py`)
+  - **ADR**: 성공률이 임계를 넘으면 랜덤화 폭을 넓히는 커리큘럼(`adr.ipynb`)
 - **Gap 분석과 보정(57·58·61·62강)**
-  - **System ID**(`sysid.py`): 실물 궤적을 시뮬에서 재생, $\min_\phi\sum\|x^{real}_t-x^{sim}_t(\phi)\|^2$로 물리 파라미터 추정
+  - **System ID**(`sysid.ipynb`): 실물 궤적을 시뮬에서 재생, $\min_\phi\sum\|x^{real}_t-x^{sim}_t(\phi)\|^2$로 물리 파라미터 추정
   - 이후 소량의 실데이터로 fine-tuning
   - 배포: 정책을 추론 전용으로 내보내 ROS 노드에서 실행
 
@@ -240,7 +249,7 @@
   - 변환 전후 출력 정합(오차 허용치) 확인
 - **실시간성(65·66·68·69강)**
   - 평균 지연보다 **꼬리 지연(P99)**과 deadline miss가 제어 안정성을 결정
-  - `profiler.py`: 전처리/추론/후처리 구간을 나눠 분포 기록
+  - `profiler.ipynb`: 전처리/추론/후처리 구간을 나눠 분포 기록
   - 최종 추론 노드: 워밍업, 버퍼 사전 할당, 최신 프레임 슬롯, 미스 정책(버림 → 외삽 → HOLD)
   - Jetson Orin/Thor 배포에서는 전력 모드와 온도 스로틀링까지 측정
 
@@ -248,7 +257,7 @@
 
 ## [원문 대비 보강·수정 사항]
 - 강의 폴더(`L??_*`)의 파일은 교안 원문 그대로이며, 아래는 `M2_kinematics_dynamics/runnable/`에서만 수정
-- `src/arm_dynamics.py`
+- `src/arm_dynamics.ipynb`
   - 교안은 `M()`, `C()`, `gvec()`를 `...`로 생략 → **링크 끝 점질량, 수직 평면 2링크(θ는 수평 기준)** 모델로 채움
   - `energy()` 추가, `step()`(semi-implicit Euler)은 원문 그대로
 - 에너지 보존 테스트
@@ -257,7 +266,11 @@
   - `step_rk4()`를 추가하고 테스트는 RK4로 모델을 검증하도록 변경
 - 특이점 테스트: 조작성 허용치를 1e-6으로 조정($\sqrt{\det}$ 연산의 수치 잔차 때문)
 - `Arm3D.fk()`: (x, y, z)를 돌려주도록 재정의(부모의 `fk`는 평면용 (x, y))
-- 데모 3개: 13~15강 본문의 실험 절차를 실행 가능한 스크립트로 옮김
+- 데모 3개: 13~15강 본문의 실험 절차를 실행 가능한 노트북으로 옮김
+- 노트북 전환에 따른 변경
+  - `from src.x import ...`·`from .transforms import ...` → `%run -i` 셀로 교체
+  - `sys.path` 조작, `matplotlib.use("Agg")`, `__file__` 기준 경로 → 제거(그래프가 노트북 안에 바로 표시됨)
+  - 빈 `src/__init__.py`와 `pytest.ini`는 노트북 구조에서 필요 없어 삭제
 
 ---
 
@@ -265,7 +278,7 @@
 
 ## [M1_embedded_control]
 - [L01_제어_개요와_시스템_응답](M1_embedded_control/L01_제어_개요와_시스템_응답/)
-  - `01_Python으로_눈으로_확인하기.py`
+  - `01_Python으로_눈으로_확인하기.ipynb`
 - [L03_PID_제어와_튜닝](M1_embedded_control/L03_PID_제어와_튜닝/)
   - `01_이산화_MCU_위의_PID.c`, `02_대표_대책_anti_windup.c`
 - [L04_MCU와_주변장치](M1_embedded_control/L04_MCU와_주변장치/)
@@ -281,54 +294,54 @@
 
 ## [M2_kinematics_dynamics]
 - [L13_2_3DOF_FK_동차변환_체인](M2_kinematics_dynamics/L13_2_3DOF_FK_동차변환_체인/)
-  - `01_transforms.py`, `02_기본_변환_블록_만들기.py`, `03_fk_chain.py`, `04_FK_체인_로봇을_데이터로_표현하기.py`, `05_test_fk.py`, `06_자세_그리기.py`, `07_작업_공간_FK를_몬테카를로로.py`, `08_3D로_확장.py`
+  - `01_transforms.ipynb`, `02_기본_변환_블록_만들기.ipynb`, `03_fk_chain.ipynb`, `04_FK_체인_로봇을_데이터로_표현하기.ipynb`, `05_test_fk.ipynb`, `06_자세_그리기.ipynb`, `07_작업_공간_FK를_몬테카를로로.ipynb`, `08_3D로_확장.ipynb`
 - [L14_Jacobian_속도_변환_특이점_탐지](M2_kinematics_dynamics/L14_Jacobian_속도_변환_특이점_탐지/)
-  - `01_jacobian.py`, `02_수치_미분_Jacobian_검증자.py`, `03_test_jacobian.py`, `04_속도_변환_정방향과_역방향.py`, `05_특이점_탐지_지표를_코드로.py`, `06_특이점_통과_실험_폭주를_눈으로.py`, `07_특이점_통과_실험_폭주를_눈으로.py`
+  - `01_jacobian.ipynb`, `02_수치_미분_Jacobian_검증자.ipynb`, `03_test_jacobian.ipynb`, `04_속도_변환_정방향과_역방향.ipynb`, `05_특이점_탐지_지표를_코드로.ipynb`, `06_특이점_통과_실험_폭주를_눈으로.ipynb`, `07_특이점_통과_실험_폭주를_눈으로.ipynb`
 - [L15_Quintic_궤적_생성_PID_튜닝](M2_kinematics_dynamics/L15_Quintic_궤적_생성_PID_튜닝/)
-  - `01_trajectory.py`, `02_arm_dynamics.py`, `03_시뮬레이터_12강_동역학을_코드로.py`, `04_추종_실험_계단_vs_Quintic_PID_vs_PID_중력_보상.py`
+  - `01_trajectory.ipynb`, `02_arm_dynamics.ipynb`, `03_시뮬레이터_12강_동역학을_코드로.ipynb`, `04_추종_실험_계단_vs_Quintic_PID_vs_PID_중력_보상.ipynb`
 
 ## [M2_kinematics_dynamics/runnable]
-- `src/transforms.py` — `rot_z`, `rot_x`, `trans`, `dh_transform` (13강)
-- `src/fk_chain.py` — `PlanarArm`, `Arm3D` (13강)
-- `src/jacobian.py` — `jacobian_planar`, `jacobian_numeric`, `singularity_metrics`, `dls`, `adaptive_lambda` (14강)
-- `src/trajectory.py` — `quintic` (15강)
-- `src/arm_dynamics.py` — `TwoLinkDynamics`: M·C·g·energy, `step`(원문), `step_rk4`(보강) (12·15강)
-- `tests/` — `test_fk.py`, `test_jacobian.py`, `test_dynamics.py`
-- `demos/` — `demo_fk_workspace.py`, `demo_singularity.py`, `demo_tracking.py` → `demos/out/*.png`
+- `src/transforms.ipynb` — `rot_z`, `rot_x`, `trans`, `dh_transform` (13강)
+- `src/fk_chain.ipynb` — `PlanarArm`, `Arm3D` (13강)
+- `src/jacobian.ipynb` — `jacobian_planar`, `jacobian_numeric`, `singularity_metrics`, `dls`, `adaptive_lambda` (14강)
+- `src/trajectory.ipynb` — `quintic` (15강)
+- `src/arm_dynamics.ipynb` — `TwoLinkDynamics`: M·C·g·energy, `step`(원문), `step_rk4`(보강) (12·15강)
+- `tests/` — `test_fk.ipynb`, `test_jacobian.ipynb`, `test_dynamics.ipynb`
+- `demos/` — `demo_fk_workspace.ipynb`, `demo_singularity.ipynb`, `demo_tracking.ipynb` → `demos/out/*.png`
 
 ## [M3_computer_vision]
 - [L16_OpenCV_기초](M3_computer_vision/L16_OpenCV_기초/)
-  - `01_이미지_NumPy_배열.py`, `02_이미지_NumPy_배열.py`, `03_색공간_왜_HSV인가.py`, `04_필터링_노이즈를_눌러야_마스크가_깨끗하다.py`, `05_이진화와_모폴로지_마스크_청소.py`
+  - `01_이미지_NumPy_배열.ipynb`, `02_이미지_NumPy_배열.ipynb`, `03_색공간_왜_HSV인가.ipynb`, `04_필터링_노이즈를_눌러야_마스크가_깨끗하다.ipynb`, `05_이진화와_모폴로지_마스크_청소.ipynb`
 - [L17_핀홀_카메라_모델과_렌즈_왜곡](M3_computer_vision/L17_핀홀_카메라_모델과_렌즈_왜곡/)
-  - `01_언제_반드시_보정해야_하나.py`
+  - `01_언제_반드시_보정해야_하나.ipynb`
 - [L18_PnP_포즈_추정과_단안_거리_모호성](M3_computer_vision/L18_PnP_포즈_추정과_단안_거리_모호성/)
-  - `01_PnP_문제의_정의.py`
+  - `01_PnP_문제의_정의.ipynb`
 - [L19_HSV_마스킹_컨투어_색상_객체_검출](M3_computer_vision/L19_HSV_마스킹_컨투어_색상_객체_검출/)
-  - `01_color_detector.py`, `02_컨투어_덩어리를_찾고_재기.py`, `03_시간_축_안정화_검출값_떨림_잡기.py`, `04_run_detector.py`
+  - `01_color_detector.ipynb`, `02_컨투어_덩어리를_찾고_재기.ipynb`, `03_시간_축_안정화_검출값_떨림_잡기.ipynb`, `04_run_detector.ipynb`
 - [L20_체커보드_카메라_캘리브레이션](M3_computer_vision/L20_체커보드_카메라_캘리브레이션/)
-  - `01_calibrate.py`, `02_코너_검출과_캘리브레이션_실행.py`, `03_관문_③_눈_검사_undistort.py`, `04_적용_저장_불러오기_즉시_활용.py`
+  - `01_calibrate.ipynb`, `02_코너_검출과_캘리브레이션_실행.ipynb`, `03_관문_③_눈_검사_undistort.ipynb`, `04_적용_저장_불러오기_즉시_활용.ipynb`
 - [L21_cv_bridge_ROS2_이미지_토픽_연동](M3_computer_vision/L21_cv_bridge_ROS2_이미지_토픽_연동/)
-  - `01_두_가지_표준_메시지.sh`, `02_color_detector_node.py`, `03_실행과_확인.sh`
+  - `01_두_가지_표준_메시지.sh`, `02_color_detector_node.ipynb`, `03_실행과_확인.sh`
 - [L22_검출_포즈추정_비전_파이프라인_통합](M3_computer_vision/L22_검출_포즈추정_비전_파이프라인_통합/)
-  - `01_aruco_pose_node.py`, `02_경로_B_색_검출_거리_추정.py`, `03_RViz2_시각화_3D로_보는_첫_순간.sh`, `04_rosbag_회귀_시험.sh`
+  - `01_aruco_pose_node.ipynb`, `02_경로_B_색_검출_거리_추정.ipynb`, `03_RViz2_시각화_3D로_보는_첫_순간.sh`, `04_rosbag_회귀_시험.sh`
 
 ## [M4_3d_perception]
 - [L23_카메라_좌표계_변환_심화](M4_3d_perception/L23_카메라_좌표계_변환_심화/)
-  - `01_사슬_왕복_코드로_검증.py`
+  - `01_사슬_왕복_코드로_검증.ipynb`
 - [L24_PnP_심화](M4_3d_perception/L24_PnP_심화/)
-  - `01_이상치의_세계_RANSAC.py`
+  - `01_이상치의_세계_RANSAC.ipynb`
 - [L25_YOLO_계열_객체_검출_파이프라인](M4_3d_perception/L25_YOLO_계열_객체_검출_파이프라인/)
-  - `01_Ultralytics로_추론_다섯_줄.py`
+  - `01_Ultralytics로_추론_다섯_줄.ipynb`
 - [L26_Point_Cloud_표현_처리](M4_3d_perception/L26_Point_Cloud_표현_처리/)
-  - `01_표현_순서_없는_점들의_집합.py`, `02_필터_①_Voxel_다운샘플_점을_줄여야_시작된다.py`, `03_필터_②_SOR_통계로_이상치_걷어내기.py`, `04_평면_추출_RANSAC의_재등판.py`, `05_클러스터링_덩어리를_개체로.py`
+  - `01_표현_순서_없는_점들의_집합.ipynb`, `02_필터_①_Voxel_다운샘플_점을_줄여야_시작된다.ipynb`, `03_필터_②_SOR_통계로_이상치_걷어내기.ipynb`, `04_평면_추출_RANSAC의_재등판.ipynb`, `05_클러스터링_덩어리를_개체로.ipynb`
 - [L28_cv2_solvePnP_2D_3D_포즈_추정](M4_3d_perception/L28_cv2_solvePnP_2D_3D_포즈_추정/)
-  - `01_pnp_bench.py`, `02_실험_3_RANSAC_오염_실험.py`, `03_실물_상자_포즈_추정기.py`
+  - `01_pnp_bench.ipynb`, `02_실험_3_RANSAC_오염_실험.ipynb`, `03_실물_상자_포즈_추정기.ipynb`
 - [L29_YOLO_추론_ROS2_통합](M4_3d_perception/L29_YOLO_추론_ROS2_통합/)
-  - `01_yolo_node.py`, `02_실시간성_측정과_동작점_선택.sh`, `03_3D_승격_어디에_까지.py`
+  - `01_yolo_node.ipynb`, `02_실시간성_측정과_동작점_선택.sh`, `03_3D_승격_어디에_까지.ipynb`
 - [L30_Point_Cloud_필터링](M4_3d_perception/L30_Point_Cloud_필터링/)
-  - `01_synth_scene.py`, `02_segment.py`, `03_실데이터_적용과_시각화.py`
+  - `01_synth_scene.ipynb`, `02_segment.ipynb`, `03_실데이터_적용과_시각화.ipynb`
 - [L31_RGBD_깊이_취득_포인트클라우드_변환](M4_3d_perception/L31_RGBD_깊이_취득_포인트클라우드_변환/)
-  - `01_rgbd_source.py`, `02_depth_to_cloud.py`, `03_합류_검출_깊이_클라우드.py`
+  - `01_rgbd_source.ipynb`, `02_depth_to_cloud.ipynb`, `03_합류_검출_깊이_클라우드.ipynb`
 
 ## [M6_slam_nav2]
 - [L41_cuVSLAM_nvblox_3D_지도_생성_저장_로드](M6_slam_nav2/L41_cuVSLAM_nvblox_3D_지도_생성_저장_로드/)
@@ -336,44 +349,44 @@
 - [L42_cuVSLAM_지도_재위치_추정_추적_복구](M6_slam_nav2/L42_cuVSLAM_지도_재위치_추정_추적_복구/)
   - `01_배선_시각_지도_로드와_TF_공급.sh`, `02_배선_시각_지도_로드와_TF_공급.sh`, `03_실험_A_위치_힌트_오차와_재위치_추정.sh`
 - [L43_Nav2_다중_Waypoint_주행](M6_slam_nav2/L43_Nav2_다중_Waypoint_주행/)
-  - `01_풀스택_기동과_첫_주행.sh`, `02_patrol_node.py`, `03_waypoints.yaml`, `04_두_가지_실행_방식.py`, `05_nav_logger.py`
+  - `01_풀스택_기동과_첫_주행.sh`, `02_patrol_node.ipynb`, `03_waypoints.yaml`, `04_두_가지_실행_방식.ipynb`, `05_nav_logger.ipynb`
 - [L44_Planner_Costmap_튜닝_동적_장애물_회피](M6_slam_nav2/L44_Planner_Costmap_튜닝_동적_장애물_회피/)
   - `01_회귀_게이트_채택의_조건.sh`
 - [L45_주행_성공률_소요시간_재계획_측정](M6_slam_nav2/L45_주행_성공률_소요시간_재계획_측정/)
-  - `01_bench_runner.py`
+  - `01_bench_runner.ipynb`
 
 ## [M7_imitation_learning]
 - [L47_Behavior_Cloning_정책_학습](M7_imitation_learning/L47_Behavior_Cloning_정책_학습/)
-  - `01_우리의_실습_무대_2링크_도달_과제_51강_예열.py`
+  - `01_우리의_실습_무대_2링크_도달_과제_51강_예열.ipynb`
 - [L50_시연_데이터_시계열_정합_노이즈_제거](M7_imitation_learning/L50_시연_데이터_시계열_정합_노이즈_제거/)
-  - `01_collector.py`, `02_align.py`, `03_산출물_HDF5와_품질_리포트.txt`
+  - `01_collector.ipynb`, `02_align.ipynb`, `03_산출물_HDF5와_품질_리포트.txt`
 - [L51_MLP_CNN_Transformer_BC_정책_학습](M7_imitation_learning/L51_MLP_CNN_Transformer_BC_정책_학습/)
-  - `01_train_bc.py`, `02_②_CNN_이미지_관측_의사코드.txt`, `03_rollout_eval.py`
+  - `01_train_bc.ipynb`, `02_②_CNN_이미지_관측_의사코드.txt`, `03_rollout_eval.ipynb`
 - [L52_Diffusion_Policy_비정형_조작_학습](M7_imitation_learning/L52_Diffusion_Policy_비정형_조작_학습/)
-  - `01_갈림길_데이터셋_저주를_설계하다.sh`, `02_①_노이즈_예측_네트워크.py`, `03_②_학습_루프_48강_수식_그대로.py`, `04_③_샘플링과_리시딩_호라이즌_실행.py`
+  - `01_갈림길_데이터셋_저주를_설계하다.sh`, `02_①_노이즈_예측_네트워크.ipynb`, `03_②_학습_루프_48강_수식_그대로.ipynb`, `04_③_샘플링과_리시딩_호라이즌_실행.ipynb`
 - [L53_정책_성능](M7_imitation_learning/L53_정책_성능/)
-  - `01_평가기_정책을_꽂으면_리포트가_나온다.py`
+  - `01_평가기_정책을_꽂으면_리포트가_나온다.ipynb`
 - [L54_DAgger_HG_DAgger_데이터_효율화](M7_imitation_learning/L54_DAgger_HG_DAgger_데이터_효율화/)
-  - `01_expert.py`, `02_dagger.py`, `03_hg_dagger.py`
+  - `01_expert.ipynb`, `02_dagger.ipynb`, `03_hg_dagger.ipynb`
 
 ## [M8_sim2real]
 - [L55_Isaac_Sim_Isaac_Lab_태스크_구성](M8_sim2real/L55_Isaac_Sim_Isaac_Lab_태스크_구성/)
-  - `01_병렬성_이_도구의_존재_이유.py`
+  - `01_병렬성_이_도구의_존재_이유.ipynb`
 - [L59_Isaac_로봇_태스크_센서_환경_구성](M8_sim2real/L59_Isaac_로봇_태스크_센서_환경_구성/)
-  - `01_태스크_구현_명세서의_코드화_의사코드.txt`, `02_기준_학습_성립_의_증명.py`
+  - `01_태스크_구현_명세서의_코드화_의사코드.txt`, `02_기준_학습_성립_의_증명.ipynb`
 - [L60_도메인_랜덤화_학습_환경_구축](M8_sim2real/L60_도메인_랜덤화_학습_환경_구축/)
-  - `01_dr.py`, `02_adr.py`
+  - `01_dr.ipynb`, `02_adr.ipynb`
 - [L61_학습_정책_실물_배포_성능_검증](M8_sim2real/L61_학습_정책_실물_배포_성능_검증/)
-  - `01_내보내기와_실행_노드.py`
+  - `01_내보내기와_실행_노드.ipynb`
 - [L62_실패_케이스_분석_보정_전략_적용](M8_sim2real/L62_실패_케이스_분석_보정_전략_적용/)
-  - `01_sysid.py`
+  - `01_sysid.ipynb`
 
 ## [M9_edge_deployment]
 - [L63_ONNXRuntime_추론_최적화](M9_edge_deployment/L63_ONNXRuntime_추론_최적화/)
-  - `01_ONNX_모델의_표준_도면.py`, `02_ONNXRuntime_실행_공급자_EP_라는_설계.py`
+  - `01_ONNX_모델의_표준_도면.ipynb`, `02_ONNXRuntime_실행_공급자_EP_라는_설계.ipynb`
 - [L67_ONNX_TensorRT_변환_FP16_INT8_양자화](M9_edge_deployment/L67_ONNX_TensorRT_변환_FP16_INT8_양자화/)
-  - `01_export_all.py`, `02_컨베이어_2구간_엔진_빌드.sh`, `03_컨베이어_2구간_엔진_빌드.py`
+  - `01_export_all.ipynb`, `02_컨베이어_2구간_엔진_빌드.sh`, `03_컨베이어_2구간_엔진_빌드.ipynb`
 - [L68_추론_지연](M9_edge_deployment/L68_추론_지연/)
-  - `01_profiler.py`
+  - `01_profiler.ipynb`
 - [L69_ROS2_제어_루프_통합_안정성_검증](M9_edge_deployment/L69_ROS2_제어_루프_통합_안정성_검증/)
   - `01_trt_inference_node_의사코드.txt`, `02_tree_deploy.txt`

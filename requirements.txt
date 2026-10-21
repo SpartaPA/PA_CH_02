@@ -3,6 +3,7 @@ numpy
 scipy
 matplotlib
 pytest
+jupyterlab              # 노트북 실행
 
 # M3·M4 비전 / 3D
 opencv-contrib-python   # ArUco 포함
