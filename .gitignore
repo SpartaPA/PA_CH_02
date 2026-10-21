@@ -1,0 +1,8 @@
+# 에디터 / IntelliSense DB (수백 MB)
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
