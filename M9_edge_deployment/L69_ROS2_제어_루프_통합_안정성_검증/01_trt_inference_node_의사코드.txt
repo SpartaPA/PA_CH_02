@@ -1,0 +1,19 @@
+# [CH2 Physical AI] 69강. [실습] ROS2 제어 루프 통합·안정성 검증
+# 절: 1. 추론 노드의 완성형 — 그동안의 모든 규율을 한 몸에
+# 원본 경로: trt_inference_node.py
+# ※ 강의 교안의 코드 블록을 원문 그대로 옮긴 것(핵심부 발췌 포함)
+
+# trt_inference_node.py — 29강 구조의 최종 진화
+class TrtInferenceNode(Node):
+    def __init__(self):
+        # 엔진 로드 + 워밍업 N회 (63강) + 버퍼 사전 할당 (66강)
+        # 구독: 최신 슬롯 (29강) / 발행: 결과 + /inference/diag (지연 P50/P99·드롭률·온도)
+        # 파라미터: 엔진 경로(결정서 해시 검증!), 미스 정책 설정
+    def on_timer(self):
+        t0 = stamp_of(frame)
+        out = self.engine.run(...)             # CUDA 이벤트 계측 (68강)
+        age = now() - t0
+        if age > self.deadline:                # ── 미스 정책 (66강 명세의 구현)
+            self.miss_count += 1
+            return self.apply_miss_policy()    # 버림 → (연속 시) 외삽 → (5연속) HOLD+경고
+        self.publish(out, header=frame.header)

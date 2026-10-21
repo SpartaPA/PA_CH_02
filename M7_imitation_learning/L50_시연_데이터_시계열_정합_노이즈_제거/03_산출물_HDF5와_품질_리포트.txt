@@ -1,0 +1,9 @@
+# [CH2 Physical AI] 50강. [실습] 시연 데이터 시계열 정합·노이즈 제거
+# 절: 4. 산출물 — HDF5와 품질 리포트
+# ※ 강의 교안의 코드 블록을 원문 그대로 옮긴 것(핵심부 발췌 포함)
+
+demos_clean.hdf5
+├── data/ep_000/ {obs(N,6), actions(N,2), timestamps(N)}
+│   └── attrs: {success: True, recovery: False, seed, collector}
+├── ...
+└── attrs: {hz: 20, obs_spec, act_spec, norm_stats(train만!), version}

@@ -1,0 +1,19 @@
+# 바로 실행 (M1/L01, M2/runnable)
+numpy
+scipy
+matplotlib
+pytest
+
+# M3·M4 비전 / 3D
+opencv-contrib-python   # ArUco 포함
+open3d
+ultralytics             # YOLO (25·29강)
+pyrealsense2            # D435i (31강)
+
+# M7 모방학습 / M9 배포
+torch
+h5py
+onnx
+onnxruntime             # GPU 사용 시 onnxruntime-gpu
+# TensorRT, cuda-python 은 NVIDIA JetPack / TensorRT 설치본을 사용
+# ROS 2 패키지(rclpy, cv_bridge, nav2_simple_commander 등)는 apt(ROS 2 Lyrical)로 설치

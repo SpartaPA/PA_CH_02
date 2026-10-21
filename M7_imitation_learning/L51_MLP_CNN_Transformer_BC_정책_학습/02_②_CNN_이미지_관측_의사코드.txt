@@ -1,0 +1,7 @@
+# [CH2 Physical AI] 51강. [실습] MLP/CNN/Transformer BC 정책 학습
+# 절: ② CNN — 이미지 관측
+# ※ 강의 교안의 코드 블록을 원문 그대로 옮긴 것(핵심부 발췌 포함)
+
+# 작은 CNN 인코더 (16강 컨볼루션 → 25강 백본의 최소판)
+Conv(3→32, k4, s2) → Conv(32→64, k4, s2) → Conv(64→64, k3, s1) → flatten
+→ concat[관절 상태 4] → MLP 머리

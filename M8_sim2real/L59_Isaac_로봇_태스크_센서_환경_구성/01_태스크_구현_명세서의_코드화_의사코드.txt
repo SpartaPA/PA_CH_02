@@ -1,0 +1,10 @@
+# [CH2 Physical AI] 59강. [실습] Isaac 로봇 태스크·센서 환경 구성
+# 절: 2. 태스크 구현 — 명세서의 코드화
+# ※ 강의 교안의 코드 블록을 원문 그대로 옮긴 것(핵심부 발췌 포함)
+
+class ReachTask:
+    def reset(self, env_ids) -> obs          # 초기 상태 분포에서 (해당 환경만!)
+    def step(self, actions) -> obs, reward, done, info
+    # 관측: [θ, θ̇, 물체 상대 위치]  ← 전부 "실물에서 구할 수 있는 것" (55강 규율)
+    # 행동: 관절 델타 (클램프 포함)
+    # 성공: 거리 < 2cm 유지 0.5s / 실패: 시간 초과·관절 한계
