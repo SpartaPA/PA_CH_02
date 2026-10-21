@@ -14,6 +14,7 @@
 ## [폴더 구조]
 - `README.md` — 이 문서 (실행의 이론적 바탕)
 - `reference.md` — 핵심 참고 서적
+- `recommendation.md` — 그중 꼭 읽을 3권과 읽는 순서
 - `requirements.txt` — Python 의존성
 - `M1_embedded_control/` — ① 임베디드 제어 기초 (1~8강)
 - `M2_kinematics_dynamics/` — ② 로봇 기구학 및 동역학 (9~15강)
