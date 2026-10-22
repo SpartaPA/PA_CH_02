@@ -7,7 +7,7 @@
 - 공개된 하위 페이지 73개(모듈 8개 + 강의 64개), 토글 속 "심화" 블록까지 전부 수집
 - 코드 블록 **128개**: Python 74 · C 32 · Bash 18 · YAML 1 · 텍스트 3
 - 모듈 ⑤·⑩(팀 프로젝트)은 공개 하위 페이지가 없어 제외
-- 코드 블록이 없는 이론 강의(2·9~12·27·37~40·46·48·49·56~58·64~66강)는 폴더 없음
+- 코드 블록이 없는 이론 강의(2·9~12·27·37~40·46·48·49·56~58·64~66강)는 교안 원문을 요약한 `README.md`만 담은 폴더로 둠
 
 ---
 
@@ -96,7 +96,11 @@
   - 1차계 $G(s)=\frac{1}{\tau s+1}$의 계단 응답: $y=1-e^{-t/\tau}$
   - 2차계 $G(s)=\frac{\omega_n^2}{s^2+2\zeta\omega_n s+\omega_n^2}$는 감쇠비 $\zeta<1$에서 감쇠 진동 $\omega_d=\omega_n\sqrt{1-\zeta^2}$로 오버슈트 발생
   - `L01`은 이 두 식을 그대로 그림
-  - 극점의 실수부가 정착시간을, 허수부가 진동을 결정(2강)
+- **피드백 안정성(2강)** — `L02`(요약만)
+  - 극점 $s=a+jb$ → 응답 항 $e^{at}(\cos bt+j\sin bt)$: 실수부가 수렴/발산·정착시간($t_s\approx4/\sigma$), 허수부가 진동을 결정
+  - 모든 극점이 s-평면 왼쪽이면 안정, 허수축 위면 한계 안정
+  - 폐루프 극점은 $1+K_pG(s)=0$의 해 → 이득이 극점을 옮기고, 지연이 있으면 큰 이득이 발진을 부름
+  - 발진 경계의 $K_u$·$T_u$가 3강 Ziegler–Nichols의 입력
 - **PID와 이산화(3·7강)**
   - 연속 PID $u=K_pe+K_i\int e\,dt+K_d\dot e$를 MCU 주기 $dt$로 돌리기 위해 적분은 누적합, 미분은 차분으로 변환
   - 출력 포화 중 적분이 계속 쌓이는 **windup**은 포화 중 적분을 멈춰 방지(clamping anti-windup)
@@ -281,6 +285,8 @@
 ## [M1_embedded_control]
 - [L01_제어_개요와_시스템_응답](M1_embedded_control/L01_제어_개요와_시스템_응답/)
   - `01_Python으로_눈으로_확인하기.ipynb`
+- [L02_피드백_안정성_극점_위치와_응답](M1_embedded_control/L02_피드백_안정성_극점_위치와_응답/)
+  - 코드 없음 — `README.md`(이론 요약)만
 - [L03_PID_제어와_튜닝](M1_embedded_control/L03_PID_제어와_튜닝/)
   - `01_이산화_MCU_위의_PID.c`, `02_대표_대책_anti_windup.c`
 - [L04_MCU와_주변장치](M1_embedded_control/L04_MCU와_주변장치/)
@@ -295,6 +301,14 @@
   - `01_노드_코드.c`, `02_Agent_실행과_접속_확인.sh`, `03_Agent_실행과_접속_확인.sh`, `04_조작과_관찰.sh`
 
 ## [M2_kinematics_dynamics]
+- [L09_순기구학_DH_파라미터_동차변환_FK](M2_kinematics_dynamics/L09_순기구학_DH_파라미터_동차변환_FK/)
+  - 코드 없음 — `README.md`(이론 요약)만
+- [L10_역기구학_해석적_수치적_IK](M2_kinematics_dynamics/L10_역기구학_해석적_수치적_IK/)
+  - 코드 없음 — `README.md`(이론 요약)만
+- [L11_Jacobian과_특이점](M2_kinematics_dynamics/L11_Jacobian과_특이점/)
+  - 코드 없음 — `README.md`(이론 요약)만
+- [L12_동역학_제어_개요](M2_kinematics_dynamics/L12_동역학_제어_개요/)
+  - 코드 없음 — `README.md`(이론 요약)만
 - [L13_2_3DOF_FK_동차변환_체인](M2_kinematics_dynamics/L13_2_3DOF_FK_동차변환_체인/)
   - `01_transforms.ipynb`, `02_기본_변환_블록_만들기.ipynb`, `03_fk_chain.ipynb`, `04_FK_체인_로봇을_데이터로_표현하기.ipynb`, `05_test_fk.ipynb`, `06_자세_그리기.ipynb`, `07_작업_공간_FK를_몬테카를로로.ipynb`, `08_3D로_확장.ipynb`
 - [L14_Jacobian_속도_변환_특이점_탐지](M2_kinematics_dynamics/L14_Jacobian_속도_변환_특이점_탐지/)
@@ -336,6 +350,8 @@
   - `01_Ultralytics로_추론_다섯_줄.ipynb`
 - [L26_Point_Cloud_표현_처리](M4_3d_perception/L26_Point_Cloud_표현_처리/)
   - `01_표현_순서_없는_점들의_집합.ipynb`, `02_필터_①_Voxel_다운샘플_점을_줄여야_시작된다.ipynb`, `03_필터_②_SOR_통계로_이상치_걷어내기.ipynb`, `04_평면_추출_RANSAC의_재등판.ipynb`, `05_클러스터링_덩어리를_개체로.ipynb`
+- [L27_Stereo_Depth_RGBD와_6D_Pose_Estimation](M4_3d_perception/L27_Stereo_Depth_RGBD와_6D_Pose_Estimation/)
+  - 코드 없음 — `README.md`(이론 요약)만
 - [L28_cv2_solvePnP_2D_3D_포즈_추정](M4_3d_perception/L28_cv2_solvePnP_2D_3D_포즈_추정/)
   - `01_pnp_bench.ipynb`, `02_실험_3_RANSAC_오염_실험.ipynb`, `03_실물_상자_포즈_추정기.ipynb`
 - [L29_YOLO_추론_ROS2_통합](M4_3d_perception/L29_YOLO_추론_ROS2_통합/)
@@ -346,6 +362,14 @@
   - `01_rgbd_source.ipynb`, `02_depth_to_cloud.ipynb`, `03_합류_검출_깊이_클라우드.ipynb`
 
 ## [M6_slam_nav2]
+- [L37_SLAM_원리와_도구_비교](M6_slam_nav2/L37_SLAM_원리와_도구_비교/)
+  - 코드 없음 — `README.md`(이론 요약)만
+- [L38_Localization_상태_추정](M6_slam_nav2/L38_Localization_상태_추정/)
+  - 코드 없음 — `README.md`(이론 요약)만
+- [L39_Mapping_Localization_데이터_흐름과_Loop_Closure](M6_slam_nav2/L39_Mapping_Localization_데이터_흐름과_Loop_Closure/)
+  - 코드 없음 — `README.md`(이론 요약)만
+- [L40_Nav2_스택과_Planner_Costmap](M6_slam_nav2/L40_Nav2_스택과_Planner_Costmap/)
+  - 코드 없음 — `README.md`(이론 요약)만
 - [L41_cuVSLAM_nvblox_3D_지도_생성_저장_로드](M6_slam_nav2/L41_cuVSLAM_nvblox_3D_지도_생성_저장_로드/)
   - `01_배선_39강_회로도의_실물화.sh`, `02_배선_39강_회로도의_실물화.sh`, `03_서로_다른_세_가지_산출물.sh`, `04_재로드_확인.sh`
 - [L42_cuVSLAM_지도_재위치_추정_추적_복구](M6_slam_nav2/L42_cuVSLAM_지도_재위치_추정_추적_복구/)
@@ -358,8 +382,14 @@
   - `01_bench_runner.ipynb`
 
 ## [M7_imitation_learning]
+- [L46_전문가_시연_데이터_수집](M7_imitation_learning/L46_전문가_시연_데이터_수집/)
+  - 코드 없음 — `README.md`(이론 요약)만
 - [L47_Behavior_Cloning_정책_학습](M7_imitation_learning/L47_Behavior_Cloning_정책_학습/)
   - `01_우리의_실습_무대_2링크_도달_과제_51강_예열.ipynb`
+- [L48_Diffusion_Policy_행동_분포_모델링](M7_imitation_learning/L48_Diffusion_Policy_행동_분포_모델링/)
+  - 코드 없음 — `README.md`(이론 요약)만
+- [L49_Cross_Embodiment_정책_지표_DAgger](M7_imitation_learning/L49_Cross_Embodiment_정책_지표_DAgger/)
+  - 코드 없음 — `README.md`(이론 요약)만
 - [L50_시연_데이터_시계열_정합_노이즈_제거](M7_imitation_learning/L50_시연_데이터_시계열_정합_노이즈_제거/)
   - `01_collector.ipynb`, `02_align.ipynb`, `03_산출물_HDF5와_품질_리포트.txt`
 - [L51_MLP_CNN_Transformer_BC_정책_학습](M7_imitation_learning/L51_MLP_CNN_Transformer_BC_정책_학습/)
@@ -374,6 +404,12 @@
 ## [M8_sim2real]
 - [L55_Isaac_Sim_Isaac_Lab_태스크_구성](M8_sim2real/L55_Isaac_Sim_Isaac_Lab_태스크_구성/)
   - `01_병렬성_이_도구의_존재_이유.ipynb`
+- [L56_도메인_랜덤화](M8_sim2real/L56_도메인_랜덤화/)
+  - 코드 없음 — `README.md`(이론 요약)만
+- [L57_Sim_to_Real_Gap_원인_분석](M8_sim2real/L57_Sim_to_Real_Gap_원인_분석/)
+  - 코드 없음 — `README.md`(이론 요약)만
+- [L58_보정_전략과_평가_지표](M8_sim2real/L58_보정_전략과_평가_지표/)
+  - 코드 없음 — `README.md`(이론 요약)만
 - [L59_Isaac_로봇_태스크_센서_환경_구성](M8_sim2real/L59_Isaac_로봇_태스크_센서_환경_구성/)
   - `01_태스크_구현_명세서의_코드화_의사코드.txt`, `02_기준_학습_성립_의_증명.ipynb`
 - [L60_도메인_랜덤화_학습_환경_구축](M8_sim2real/L60_도메인_랜덤화_학습_환경_구축/)
@@ -386,6 +422,12 @@
 ## [M9_edge_deployment]
 - [L63_ONNXRuntime_추론_최적화](M9_edge_deployment/L63_ONNXRuntime_추론_최적화/)
   - `01_ONNX_모델의_표준_도면.ipynb`, `02_ONNXRuntime_실행_공급자_EP_라는_설계.ipynb`
+- [L64_TensorRT_변환과_FP16_INT8_양자화](M9_edge_deployment/L64_TensorRT_변환과_FP16_INT8_양자화/)
+  - 코드 없음 — `README.md`(이론 요약)만
+- [L65_로봇_탑재용_모델_배포_구조](M9_edge_deployment/L65_로봇_탑재용_모델_배포_구조/)
+  - 코드 없음 — `README.md`(이론 요약)만
+- [L66_실시간_배포_이슈와_지연_지표](M9_edge_deployment/L66_실시간_배포_이슈와_지연_지표/)
+  - 코드 없음 — `README.md`(이론 요약)만
 - [L67_ONNX_TensorRT_변환_FP16_INT8_양자화](M9_edge_deployment/L67_ONNX_TensorRT_변환_FP16_INT8_양자화/)
   - `01_export_all.ipynb`, `02_컨베이어_2구간_엔진_빌드.sh`, `03_컨베이어_2구간_엔진_빌드.ipynb`
 - [L68_추론_지연](M9_edge_deployment/L68_추론_지연/)
